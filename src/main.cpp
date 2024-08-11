@@ -6,9 +6,9 @@
 #include "Renderer/ShaderProgram.h"
 #include "Resources/ResourceManager.h"
 
-GLfloat points[] = {
-    0.0f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
+GLfloat point[] = {
+     0.0f,  0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
     -0.5f, -0.5f, 0.0f
 };
 
@@ -21,117 +21,86 @@ GLfloat colors[] = {
 int g_windowSizeX = 640;
 int g_windowSizeY = 480;
 
-
-void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height) {
+void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
+{
     g_windowSizeX = width;
     g_windowSizeY = height;
     glViewport(0, 0, g_windowSizeX, g_windowSizeY);
 }
 
-void glfwKeyCallback(
-    GLFWwindow* pWindow, 
-    int key,
-    int scancode,
-    int action,
-    int mode
-) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(pWindow, GL_TRUE);
     }
 }
 
 int main(int argc, char** argv)
 {
-
     /* Initialize the library */
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         std::cout << "glfwInit failed!" << std::endl;
         return -1;
     }
-    
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* pwindow = glfwCreateWindow(g_windowSizeX, g_windowSizeY, "Battle-city", nullptr, nullptr);
-
-    if (!pwindow)
+    GLFWwindow* pWindow = glfwCreateWindow(g_windowSizeX, g_windowSizeY, "Battle City", nullptr, nullptr);
+    if (!pWindow)
     {
-        std::cout << "glfwCreateWindow failed" << std::endl;
+        std::cout << "glfwCreateWindow failed!" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    glfwSetWindowSizeCallback(pwindow, glfwWindowSizeCallback);
-    glfwSetKeyCallback(pwindow, glfwKeyCallback);
+    glfwSetWindowSizeCallback(pWindow, glfwWindowSizeCallback);
+    glfwSetKeyCallback(pWindow, glfwKeyCallback);
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(pwindow);
+    glfwMakeContextCurrent(pWindow);
 
-    if (!gladLoadGL()) {
-        std::cout << "Can't load GLAD" << std::endl;
-        return -1;
+    if (!gladLoadGL())
+    {
+        std::cout << "Can't load GLAD!" << std::endl;
     }
 
-    std::cout << "Renderer " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "OpenGl " << GLVersion.major << "," <<  GLVersion.minor << std::endl;
+    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
     glClearColor(1, 1, 0, 1);
-    /*
-        //Создаём два шейдера - vertex и fragment
-        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, 1, &vertex_shader, nullptr);
-        glCompileShader(vs);
-
-        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, 1, &fragment_shader, nullptr);
-        glCompileShader(fs);
-
-        //Создаём программу и привязываем к ней шейдеры
-        GLuint shader_program = glCreateProgram();
-        glAttachShader(shader_program, vs);
-        glAttachShader(shader_program, fs);
-        glLinkProgram(shader_program);
-
-        //Шейдеры уже привязаны, удаляем
-        glDeleteShader(vs);
-        glDeleteShader(fs);
-    */
 
     {
         ResourceManager resourceManager(argv[0]);
-        auto pDefaultShaderProgram = resourceManager.loadShaderProgram(
-            "Default shader",
-            "res/shaders/vertex.txt",
-            "res/shaders/fragment.txt"
-        );
-        if (!pDefaultShaderProgram) {
-            std::cerr << "Can't create shader program: " << "Default shader" << std::endl;
+        auto pDefaultShaderProgram = resourceManager.loadShaders("DefaultShader", "res/shaders/vertex.txt", "res/shaders/fragment.txt");
+        if (!pDefaultShaderProgram)
+        {
+            std::cerr << "Can't create shader program: " << "DefaultShader" << std::endl;
             return -1;
         }
 
-        //Передаем видеокарте данные через буферы
-        GLuint points_vbo = 0; //id буфера, через него обращаемся
+        resourceManager.loadTexture("DefaultTexture", "res/textures/map_16x16.png");
+
+        GLuint points_vbo = 0;
         glGenBuffers(1, &points_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-        // BufferData работает с текущим привязанным буфером (строчка выше)
-        glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(point), point, GL_STATIC_DRAW);
 
         GLuint colors_vbo = 0;
         glGenBuffers(1, &colors_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
-        //Ещё нужен vertexArrayObject (vao)
         GLuint vao = 0;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
-        //Подключаем данные из буферов в шейдеры
-        glEnableVertexAttribArray(0); //Включаем location "0", который мы указывали в шейдере
-        glBindBuffer(GL_ARRAY_BUFFER, points_vbo); //делаем этот буфер текущим
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         glEnableVertexAttribArray(1);
@@ -139,7 +108,7 @@ int main(int argc, char** argv)
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         /* Loop until the user closes the window */
-        while (!glfwWindowShouldClose(pwindow))
+        while (!glfwWindowShouldClose(pWindow))
         {
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT);
@@ -149,7 +118,7 @@ int main(int argc, char** argv)
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             /* Swap front and back buffers */
-            glfwSwapBuffers(pwindow);
+            glfwSwapBuffers(pWindow);
 
             /* Poll for and process events */
             glfwPollEvents();
@@ -158,5 +127,4 @@ int main(int argc, char** argv)
 
     glfwTerminate();
     return 0;
-
 }

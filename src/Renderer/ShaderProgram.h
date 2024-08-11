@@ -4,25 +4,23 @@
 #include <string>
 
 namespace Renderer {
-	class ShaderProgram {
-	public:
-		ShaderProgram(const std::string& vertex_shader, const std::string& fragment_shader);
-		~ShaderProgram();
+    class ShaderProgram {
+    public:
+        ShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
+        ~ShaderProgram();
+        bool isCompiled() const { return m_isCompiled; }
+        void use() const;
 
-		bool isCompiled() const { return m_isCompiled; }
-		void use() const;
+        ShaderProgram() = delete;
+        ShaderProgram(const ShaderProgram&) = delete;
+        ShaderProgram& operator=(const ShaderProgram&) = delete;
+        ShaderProgram& operator=(ShaderProgram&& shaderProgram) noexcept;
+        ShaderProgram(ShaderProgram&& shaderProgram) noexcept;
 
-		ShaderProgram() = delete;
-		ShaderProgram(ShaderProgram&) = delete;
-		ShaderProgram& operator=(const ShaderProgram&) = delete;
-		ShaderProgram& operator=(ShaderProgram&& shaderProgram) noexcept;
-		ShaderProgram(ShaderProgram&& shaderProgram);
+    private:
+        bool createShader(const std::string& source, const GLenum shaderType, GLuint& shaderID);
 
-
-	private:
-		bool createShader(const std::string& source, const GLenum shaderType, GLuint& shaderID);
-
-		bool m_isCompiled = false;
-		GLuint m_ID = 0;
-	};
+        bool m_isCompiled = false;
+        GLuint m_ID = 0;
+    };
 }
