@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include "../Renderer/ShaderProgram.h"
 #include "../Renderer/Texture2D.h"
+
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -82,27 +83,21 @@ std::shared_ptr<Renderer::Texture2D> ResourceManager::loadTexture(const std::str
 
     if (!pixels)
     {
-        std::cerr << "Can't load image: " << textureName << std::endl;
+        std::cerr << "Can't load image: " << texturePath << std::endl;
         return nullptr;
     }
 
-    std::shared_ptr<Renderer::Texture2D> newTexture = m_textures.emplace(
-        textureName, 
-        std::make_shared<Renderer::Texture2D>(
-            width, 
-            height, 
-            pixels, 
-            channels, 
-            GL_NEAREST, 
-            GL_CLAMP_TO_EDGE
-        )
-    ).first -> second;
-
+    std::shared_ptr<Renderer::Texture2D> newTexture = m_textures.emplace(textureName, std::make_shared<Renderer::Texture2D>(width,
+                                                                                                                            height,
+                                                                                                                            pixels,
+                                                                                                                            channels,
+                                                                                                                            GL_NEAREST,
+                                                                                                                            GL_CLAMP_TO_EDGE)).first->second;
     stbi_image_free(pixels);
     return newTexture;
 }
 
-std::shared_ptr<Renderer::Texture2D> ResourceManager::getTexture(const std::string& textureName) 
+std::shared_ptr<Renderer::Texture2D> ResourceManager::getTexture(const std::string& textureName)
 {
     TexturesMap::const_iterator it = m_textures.find(textureName);
     if (it != m_textures.end())
