@@ -1,7 +1,8 @@
 #include "ShaderProgram.h"
 
-#include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <iostream>
 
 namespace Renderer {
     ShaderProgram::ShaderProgram(const std::string& vertexShader, const std::string& fragmentShader)
