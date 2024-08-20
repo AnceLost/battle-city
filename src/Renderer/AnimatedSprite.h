@@ -10,7 +10,7 @@
 
 #include "Sprite.h"
 
-namespace Renderer {
+namespace RenderEngine {
 
     class AnimatedSprite : public Sprite {
     public:
