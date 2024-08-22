@@ -4,11 +4,13 @@
 
 #include <glm/vec2.hpp>
 
+#include "IGameObject.h"
+
 namespace RenderEngine {
 	class AnimatedSprite;
 }
 
-class Tank {
+class Tank : IGameObject {
 public:
 	enum class EOrientation {
 		Top,
@@ -17,21 +19,22 @@ public:
 		Right
 	};
 	Tank(
-		std::shared_ptr<RenderEngine::AnimatedSprite> pSprite, 
+		std::shared_ptr<RenderEngine::AnimatedSprite> pSprite,
 		const float velocity,
-		const glm::vec2& position
+		const glm::vec2& position,
+		const glm::vec2& size,
+		const float rotation = 0.f
 	);
 
-	void render() const;
+	void render() const override;
 	void setOrientation(const EOrientation orientation);
 	void move(const bool move);
-	void update(const uint64_t delta);
+	void update(const uint64_t delta) override;
 
 private:
 	EOrientation m_eOrientation;
 	std::shared_ptr<RenderEngine::AnimatedSprite> m_pSprite;
 	bool m_move;
 	float m_velocity;
-	glm::vec2 m_position;
 	glm::vec2 m_moveOffset;
 };

@@ -18,6 +18,7 @@ ResourceManager::ShaderProgramsMap ResourceManager::m_shaderPrograms;
 ResourceManager::TexturesMap ResourceManager::m_textures;
 ResourceManager::SpritesMap ResourceManager::m_sprites;
 ResourceManager::AnimatedSpritesMap ResourceManager::m_animatedSprites;
+std::vector<std::vector<std::string>> ResourceManager::m_levels;
 std::string ResourceManager::m_path;
 
 void ResourceManager::unloadAllResources()
@@ -135,8 +136,6 @@ std::shared_ptr<RenderEngine::Sprite> ResourceManager::loadSprite(
     const std::string& spriteName,
     const std::string& textureName,
     const std::string& shaderName,
-    const unsigned int spriteWidth,
-    const unsigned int spriteHeight,
     const std::string& subTextureName
 ) {
     auto pTexture = getTexture(textureName);
@@ -154,13 +153,11 @@ std::shared_ptr<RenderEngine::Sprite> ResourceManager::loadSprite(
     }
 
     std::shared_ptr<RenderEngine::Sprite> newSprite = m_sprites.emplace(
-        textureName, 
+        spriteName,
         std::make_shared<RenderEngine::Sprite>(
             pTexture,
             subTextureName,
-            pShader,
-            glm::vec2(0.f, 0.f),
-            glm::vec2(spriteWidth, spriteHeight)
+            pShader
         )
     ).first->second;
 
@@ -171,8 +168,6 @@ std::shared_ptr<RenderEngine::AnimatedSprite> ResourceManager::loadAnimatedSprit
     const std::string& spriteName,
     const std::string& textureName,
     const std::string& shaderName,
-    const unsigned int spriteWidth,
-    const unsigned int spriteHeight,
     const std::string& subTextureName
 ) {
     auto pTexture = getTexture(textureName);
@@ -194,9 +189,7 @@ std::shared_ptr<RenderEngine::AnimatedSprite> ResourceManager::loadAnimatedSprit
         std::make_shared<RenderEngine::AnimatedSprite>(
             pTexture,
             subTextureName,
-            pShader,
-            glm::vec2(0.f, 0.f),
-            glm::vec2(spriteWidth, spriteHeight)
+            pShader
         )
     ).first->second;
 
@@ -316,6 +309,25 @@ bool ResourceManager::loadJSONResources(const std::string& JSONPath)
             );
         }
     }
+    auto spritesIt = document.FindMember("sprites");
+    if (spritesIt != document.MemberEnd())
+    {
+        for (const auto& currentSprite : spritesIt->value.GetArray())
+        {
+            const std::string name = currentSprite["name"].GetString();
+            const std::string textureAtlas = currentSprite["textureAtlas"].GetString();
+            const std::string shader = currentSprite["shader"].GetString();
+            const std::string subTexture = currentSprite["subTextureName"].GetString();
+
+            auto pSprite = ResourceManager::loadSprite(
+                name,
+                textureAtlas,
+                shader,
+                subTexture
+            );
+            if (!pSprite) continue;
+        }
+    }
     auto animatedSpritesIt = document.FindMember("animatedSprites");
     if (animatedSpritesIt != document.MemberEnd())
     {
@@ -324,16 +336,12 @@ bool ResourceManager::loadJSONResources(const std::string& JSONPath)
             const std::string name = currentAnimatedSprite["name"].GetString();
             const std::string textureAtlas = currentAnimatedSprite["textureAtlas"].GetString();
             const std::string shader = currentAnimatedSprite["shader"].GetString();
-            const unsigned int initialWidth = currentAnimatedSprite["initialWidth"].GetUint();
-            const unsigned int initialHeight = currentAnimatedSprite["initialHeight"].GetUint();
             const std::string initialSubTexture = currentAnimatedSprite["initialSubTexture"].GetString();
 
             auto pAnimatedSprite = ResourceManager::loadAnimatedSprite(
                 name,
                 textureAtlas,
                 shader,
-                initialWidth,
-                initialHeight,
                 initialSubTexture
             );
             if (!pAnimatedSprite) continue;
@@ -365,10 +373,23 @@ bool ResourceManager::loadJSONResources(const std::string& JSONPath)
             const auto description = currentLevel["description"].GetArray();
             std::vector<std::string> levelRows;
             levelRows.reserve(description.Size());
+            size_t maxLength = 0;
             for (const auto& currentRow : description)
             {
                 levelRows.emplace_back(currentRow.GetString());
+                if (maxLength < levelRows.back().length())
+                {
+                    maxLength = levelRows.back().length();
+                }
             }
+            for (auto& currentRow : levelRows)
+            {
+                while (currentRow.length() < maxLength)
+                {
+                    currentRow.append("D");
+                }
+            }
+            m_levels.emplace_back(std::move(levelRows));
         }
     }
     return true;

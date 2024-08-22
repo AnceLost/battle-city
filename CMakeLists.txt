@@ -21,15 +21,23 @@ add_executable(${PROJECT_NAME}
 	src/Renderer/VertexBufferLayout.h
 	src/Renderer/Renderer.cpp
 	src/Renderer/Renderer.h
+	src/Renderer/VertexArray.cpp
+	src/Renderer/VertexArray.h
+
 	src/Resources/ResourceManager.cpp
 	src/Resources/ResourceManager.h
 	src/Resources/stb_image.h
+
 	src/Game/Game.cpp
 	src/Game/Game.h
-	src/Game/Tank.cpp
-	src/Game/Tank.h
-	src/Renderer/VertexArray.cpp
-	src/Renderer/VertexArray.h
+	src/Game/GameObjects/Tank.cpp
+	src/Game/GameObjects/Tank.h
+	src/Game/GameObjects/BrickWall.cpp
+	src/Game/GameObjects/BrickWall.h
+	src/Game/GameObjects/IGameObject.cpp
+	src/Game/GameObjects/IGameObject.h
+	src/Game/Level.cpp
+	src/Game/Level.h
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

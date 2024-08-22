@@ -5,8 +5,8 @@
 #include "../Renderer/Texture2D.h"
 #include "../Renderer/Sprite.h"
 #include "../Renderer/AnimatedSprite.h"
-
-#include "Tank.h"
+#include "Level.h"
+#include "GameObjects/Tank.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
@@ -26,7 +26,11 @@ Game::~Game()
 }
 void Game::render()
 {
-    ResourceManager::getAnimatedSprite("NewAnimatedSprite")->render();
+    if (m_pLevel)
+    {
+        m_pLevel->render();
+    }
+
     if (m_pTank) 
     {
         m_pTank->render();
@@ -34,7 +38,10 @@ void Game::render()
 }
 void Game::update(const uint64_t delta)
 {
-    ResourceManager::getAnimatedSprite("NewAnimatedSprite")->update(delta);
+    if (m_pLevel)
+    {
+        m_pLevel->update(delta);
+    }
     if (m_pTank) 
     {
         if (m_keys[GLFW_KEY_W]) //вверх
@@ -81,29 +88,6 @@ bool Game::init()
     auto pTanksTextureAtlas = ResourceManager::getTexture("tanksTextureAtlas");
     if (!pTanksTextureAtlas) return false;
 
-    auto pAnimatedSprite = ResourceManager::loadAnimatedSprite(
-        "NewAnimatedSprite", 
-        "mapTextureAtlas", 
-        "spriteShader", 
-        100, 100, 
-        "beton"
-    );
-    pAnimatedSprite->setPosition(glm::vec2(300, 300));
-
-    std::vector<std::pair<std::string, uint64_t>> waterState;
-    waterState.emplace_back(std::make_pair<std::string, uint64_t>("water1", 1000000000));
-    waterState.emplace_back(std::make_pair<std::string, uint64_t>("water2", 1000000000));
-    waterState.emplace_back(std::make_pair<std::string, uint64_t>("water3", 1000000000));
-
-    std::vector<std::pair<std::string, uint64_t>> eagleState;
-    eagleState.emplace_back(std::make_pair<std::string, uint64_t>("eagle", 1000000000));
-    eagleState.emplace_back(std::make_pair<std::string, uint64_t>("deadEagle", 1000000000));
-
-    pAnimatedSprite->insertState("waterState", waterState);
-    pAnimatedSprite->insertState("eagleState", eagleState);
-
-    pAnimatedSprite->setState("waterState");
-
     glm::mat4 modelMatrix_1 = glm::mat4(1.f);
     modelMatrix_1 = glm::translate(modelMatrix_1, glm::vec3(100.f, 50.f, 0.f));
 
@@ -130,8 +114,10 @@ bool Game::init()
     m_pTank = std::make_unique<Tank>(
         pTanksAnimatedSprite,
         0.0000001f,
-        glm::vec2(100.f, 100.f)
+        glm::vec2(0),
+        glm::vec2(16.f*3, 16.f*3)
     );
+    m_pLevel = std::make_unique<Level>(ResourceManager::getLevels()[0]);
 
     return true;
 }
