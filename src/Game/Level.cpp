@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-const unsigned int BLOCK_SIZE = 16*3;
+const unsigned int BLOCK_SIZE = 16;
 
 std::shared_ptr<IGameObject> createGameObjectFromDescription(
 	const char description,

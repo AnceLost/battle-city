@@ -4,7 +4,6 @@
 #include "../Renderer/ShaderProgram.h"
 #include "../Renderer/Texture2D.h"
 #include "../Renderer/Sprite.h"
-#include "../Renderer/AnimatedSprite.h"
 #include "Level.h"
 #include "GameObjects/Tank.h"
 
@@ -107,15 +106,14 @@ bool Game::init()
     pSpriteShaderProgram->setInt("tex", 0);
     pSpriteShaderProgram->setMatrix4("projectionMat", projectionMatrix);
 
-    auto pTanksAnimatedSprite = ResourceManager::getAnimatedSprite("tankAnimatedSprite");
-    if (!pTanksAnimatedSprite) return false;
-    pTanksAnimatedSprite->setState("tankTopState");
-
     m_pTank = std::make_unique<Tank>(
-        pTanksAnimatedSprite,
-        0.0000001f,
+        ResourceManager::getSprite("tankSprite_top"),
+        ResourceManager::getSprite("tankSprite_bottom"),
+        ResourceManager::getSprite("tankSprite_left"),
+        ResourceManager::getSprite("tankSprite_right"),
+        0.00000005f,
         glm::vec2(0),
-        glm::vec2(16.f*3, 16.f*3)
+        glm::vec2(16.f, 16.f)
     );
     m_pLevel = std::make_unique<Level>(ResourceManager::getLevels()[0]);
 
