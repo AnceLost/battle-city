@@ -25,14 +25,13 @@ Game::~Game()
 }
 void Game::render()
 {
+    if (m_pTank)
+    {
+        m_pTank->render();
+    }
     if (m_pLevel)
     {
         m_pLevel->render();
-    }
-
-    if (m_pTank) 
-    {
-        m_pTank->render();
     }
 }
 void Game::update(const uint64_t delta)
@@ -81,12 +80,6 @@ bool Game::init()
     auto pSpriteShaderProgram = ResourceManager::getShaderProgram("spriteShader");
     if (!pSpriteShaderProgram) return false;
 
-    auto pTextureAtlas = ResourceManager::getTexture("mapTextureAtlas");
-    if (!pTextureAtlas) return false; 
-
-    auto pTanksTextureAtlas = ResourceManager::getTexture("tanksTextureAtlas");
-    if (!pTanksTextureAtlas) return false;
-
     glm::mat4 modelMatrix_1 = glm::mat4(1.f);
     modelMatrix_1 = glm::translate(modelMatrix_1, glm::vec3(100.f, 50.f, 0.f));
 
@@ -107,10 +100,6 @@ bool Game::init()
     pSpriteShaderProgram->setMatrix4("projectionMat", projectionMatrix);
 
     m_pTank = std::make_unique<Tank>(
-        ResourceManager::getSprite("tankSprite_top"),
-        ResourceManager::getSprite("tankSprite_bottom"),
-        ResourceManager::getSprite("tankSprite_left"),
-        ResourceManager::getSprite("tankSprite_right"),
         0.00000005f,
         glm::vec2(0),
         glm::vec2(16.f, 16.f)
