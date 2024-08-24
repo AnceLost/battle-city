@@ -8,8 +8,9 @@ BetonWall::BetonWall(
     const EBetonWallType eBetonWallType,
     const glm::vec2& position,
     const glm::vec2& size,
-    const float rotation
-) : IGameObject(position, size, rotation),
+    const float rotation,
+    const float layer
+) : IGameObject(position, size, rotation, layer),
     m_eCurrentBetonState{
         EBetonState::Destroyed,
         EBetonState::Destroyed,
@@ -67,7 +68,8 @@ void BetonWall::renderBeton(const EBetonLocation eBetonLocation) const
         m_sprite->render(
             m_position + m_blockOffsets[static_cast<size_t>(eBetonLocation)],
             m_size / 2.f, 
-            m_rotation
+            m_rotation,
+            m_layer
         );
     }
 }

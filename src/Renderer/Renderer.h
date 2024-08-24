@@ -17,6 +17,7 @@ namespace RenderEngine
 			const ShaderProgram& shader
 		);
 		static void setClearColor(float r, float g, float b, float a);
+		static void setDepthTest(const bool enable);
 		static void clear();
 		static void setViewport(
 			unsigned int width,

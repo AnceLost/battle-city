@@ -47,6 +47,7 @@ namespace RenderEngine {
             const glm::vec2& position,
             const glm::vec2& size,
             const float rotation,
+            const float layer = 0,
             const size_t frameId = 0
         );
         void insertFrames(std::vector<FrameDescription> frameDescriptions);
