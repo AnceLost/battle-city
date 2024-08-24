@@ -7,13 +7,14 @@
 #include "IGameObject.h"
 #include "../../Renderer/SpriteAnimator.h"
 
+
 namespace RenderEngine {
 	class Sprite;
 }
 
 class Tank : IGameObject {
 public:
-	enum class EOrientation {
+	enum class EOrientation : uint8_t {
 		Top,
 		Bottom,
 		Left,
