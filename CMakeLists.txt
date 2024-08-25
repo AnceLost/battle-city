@@ -44,6 +44,8 @@ add_executable(${PROJECT_NAME}
 	src/Game/GameObjects/Water.h
 	src/Game/GameObjects/Eagle.cpp
 	src/Game/GameObjects/Eagle.h
+	src/Game/GameObjects/Border.cpp
+	src/Game/GameObjects/Border.h
 	src/Game/GameObjects/IGameObject.cpp
 	src/Game/GameObjects/IGameObject.h
 	src/Game/Level.cpp
