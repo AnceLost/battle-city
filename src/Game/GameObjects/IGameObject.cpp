@@ -13,7 +13,7 @@ void IGameObject::render() const
 {
 
 }
-void IGameObject::update(const uint64_t delta)
+void IGameObject::update(const double delta)
 {
 
 }

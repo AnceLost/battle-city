@@ -62,7 +62,7 @@ public:
 	);
 	void render() const override;
 	
-	void update(const uint64_t delta) override;
+	void update(const double delta) override;
 
 private:
 	void renderBrick(const EBrickLocation eBrickLocation) const;

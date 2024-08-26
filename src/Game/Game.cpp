@@ -34,7 +34,7 @@ void Game::render()
         m_pLevel->render();
     }
 }
-void Game::update(const uint64_t delta)
+void Game::update(const double delta)
 {
     if (m_pLevel)
     {
@@ -104,7 +104,7 @@ bool Game::init()
     pSpriteShaderProgram->setMatrix4("projectionMat", projectionMatrix);
 
     m_pTank = std::make_unique<Tank>(
-        0.00000005f,
+        0.05f,
         m_pLevel->getPlayerRespawn_2(),
         glm::vec2(Level::BLOCK_SIZE, Level::BLOCK_SIZE),
         0.f

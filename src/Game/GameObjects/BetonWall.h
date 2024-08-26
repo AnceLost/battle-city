@@ -46,7 +46,7 @@ public:
 	);
 	void render() const override;
 
-	void update(const uint64_t delta) override;
+	void update(const double delta) override;
 
 private:
 	void renderBeton(const EBetonLocation eBetonLocation) const;

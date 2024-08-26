@@ -80,7 +80,7 @@ void BetonWall::render() const
     renderBeton(EBetonLocation::BottomLeft);
     renderBeton(EBetonLocation::BottomRight);
 }
-void BetonWall::update(const uint64_t delta)
+void BetonWall::update(const double delta)
 {
 
 }
