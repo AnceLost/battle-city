@@ -6,6 +6,7 @@
 #include "../Renderer/Sprite.h"
 #include "Level.h"
 #include "GameObjects/Tank.h"
+#include "../Physics/PhysicsEngine.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
@@ -45,26 +46,26 @@ void Game::update(const double delta)
         if (m_keys[GLFW_KEY_W]) //вверх
         {
             m_pTank->setOrientation(Tank::EOrientation::Top);
-            m_pTank->move(true);
+            m_pTank->setVelocity(m_pTank->getMaxVelocity());
         }
         else if (m_keys[GLFW_KEY_A]) //влево
         {
             m_pTank->setOrientation(Tank::EOrientation::Left);
-            m_pTank->move(true);
+            m_pTank->setVelocity(m_pTank->getMaxVelocity());
         }
         else if (m_keys[GLFW_KEY_D]) //вправо
         {
             m_pTank->setOrientation(Tank::EOrientation::Right);
-            m_pTank->move(true);
+            m_pTank->setVelocity(m_pTank->getMaxVelocity());
         }
         else if (m_keys[GLFW_KEY_S]) //вниз
         {
             m_pTank->setOrientation(Tank::EOrientation::Bottom);
-            m_pTank->move(true);
+            m_pTank->setVelocity(m_pTank->getMaxVelocity());
         }
         else
         {
-            m_pTank->move(false);
+            m_pTank->setVelocity(0);
         }
         m_pTank->update(delta);
     }
@@ -80,16 +81,12 @@ bool Game::init()
     auto pSpriteShaderProgram = ResourceManager::getShaderProgram("spriteShader");
     if (!pSpriteShaderProgram) return false;
 
-    glm::mat4 modelMatrix_1 = glm::mat4(1.f);
-    modelMatrix_1 = glm::translate(modelMatrix_1, glm::vec3(100.f, 50.f, 0.f));
+    m_pLevel = std::make_shared<Level>(ResourceManager::getLevels()[1]);
+    Physics::PhysicsEngine::setCurrentLevel(m_pLevel);
 
-    glm::mat4 modelMatrix_2 = glm::mat4(1.f);
-    modelMatrix_2 = glm::translate(modelMatrix_2, glm::vec3(590.f, 50.f, 0.f));
-
-
-    m_pLevel = std::make_unique<Level>(ResourceManager::getLevels()[1]);
     m_windowSize.x = static_cast<int>(m_pLevel->getLevelWidth());
     m_windowSize.y = static_cast<int>(m_pLevel->getLevelHeight());
+    
     glm::mat4 projectionMatrix = glm::ortho(
         0.f,
         static_cast<float>(m_windowSize.x),
@@ -103,12 +100,14 @@ bool Game::init()
     pSpriteShaderProgram->setInt("tex", 0);
     pSpriteShaderProgram->setMatrix4("projectionMat", projectionMatrix);
 
-    m_pTank = std::make_unique<Tank>(
+    m_pTank = std::make_shared<Tank>(
         0.05f,
-        m_pLevel->getPlayerRespawn_2(),
+        m_pLevel->getPlayerRespawn_1(),
         glm::vec2(Level::BLOCK_SIZE, Level::BLOCK_SIZE),
+        0.f,
         0.f
     );
+    Physics::PhysicsEngine::addDynamicGameObject(m_pTank);
 
     return true;
 }
