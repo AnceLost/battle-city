@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "GameObjects/Tank.h"
 #include "../Physics/PhysicsEngine.h"
+#include "GameObjects/Bullet.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
@@ -67,6 +68,10 @@ void Game::update(const double delta)
         {
             m_pTank->setVelocity(0);
         }
+        if (m_pTank && m_keys[GLFW_KEY_SPACE])
+        {
+            m_pTank->fire();
+        }
         m_pTank->update(delta);
     }
 }
@@ -81,7 +86,7 @@ bool Game::init()
     auto pSpriteShaderProgram = ResourceManager::getShaderProgram("spriteShader");
     if (!pSpriteShaderProgram) return false;
 
-    m_pLevel = std::make_shared<Level>(ResourceManager::getLevels()[1]);
+    m_pLevel = std::make_shared<Level>(ResourceManager::getLevels()[0]);
     Physics::PhysicsEngine::setCurrentLevel(m_pLevel);
 
     m_windowSize.x = static_cast<int>(m_pLevel->getLevelWidth());

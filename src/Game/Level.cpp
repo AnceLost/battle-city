@@ -223,6 +223,21 @@ std::vector<std::shared_ptr<IGameObject>> Level::getObjectsInArea(
 			}
 		}
 	}
-
+	if(endX >= m_widthBlocks)
+	{
+		output.push_back(m_mapObjects[m_mapObjects.size() - 1]);
+	}
+	if (startX <= 1)
+	{
+		output.push_back(m_mapObjects[m_mapObjects.size() - 2]);
+	}
+	if (startY <= 1)
+	{
+		output.push_back(m_mapObjects[m_mapObjects.size() - 3]);
+	}
+	if (endY >= m_heightBlocks)
+	{
+		output.push_back(m_mapObjects[m_mapObjects.size() - 4]);
+	}
 	return output;
 }

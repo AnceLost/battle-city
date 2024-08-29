@@ -25,6 +25,20 @@ namespace Physics
 		{
 			if (currentObject->getCurrentVelocity() > 0)
 			{
+				if (currentObject->getCurrentDirection().x != 0.f)
+				{
+					currentObject->getCurrentPosition() = glm::vec2(
+						currentObject->getCurrentPosition().x, 
+						static_cast<unsigned int>(currentObject->getCurrentPosition().y / 4.f + 0.5f) * 4
+					);
+				}
+				else if (currentObject->getCurrentDirection().y != 0.f)
+				{
+					currentObject->getCurrentPosition() = glm::vec2(
+						static_cast<unsigned int>(currentObject->getCurrentPosition().x / 4.f + 0.5f) * 4,
+						currentObject->getCurrentPosition().y
+					);
+				}
 				const auto newPosition = currentObject->getCurrentPosition() + currentObject->getCurrentDirection() *
 					static_cast<float>(currentObject->getCurrentVelocity() * delta);
 
@@ -60,6 +74,23 @@ namespace Physics
 				{
 					currentObject->getCurrentPosition() = newPosition;
 				}
+				else
+				{
+					if (currentObject->getCurrentDirection().x != 0.f)
+					{
+						currentObject->getCurrentPosition() = glm::vec2(
+							currentObject->getCurrentPosition().x,
+							static_cast<unsigned int>(currentObject->getCurrentPosition().y / 4.f + 0.5f) * 4
+						);
+					}
+					else if (currentObject->getCurrentDirection().y != 0.f)
+					{
+						currentObject->getCurrentPosition() = glm::vec2(
+							static_cast<unsigned int>(currentObject->getCurrentPosition().x / 4.f + 0.5f) * 4,
+							currentObject->getCurrentPosition().y
+						);
+					}
+				}
 			}
 		}
 	}
@@ -86,25 +117,26 @@ namespace Physics
 				const glm::vec2 currentCollider2_leftBottom_world = currentCollider2.bottomLeft + position2;
 				const glm::vec2 currentCollider2_topRight_world = currentCollider2.topRight + position2;
 
-				if (currentCollider1_leftBottom_world.x + 1.f >= currentCollider2_topRight_world.x)
+				if (currentCollider1_leftBottom_world.x >= currentCollider2_topRight_world.x)
 				{
-					return false;
+					continue;
 				}
-				if (currentCollider1_topRight_world.x - 1.f <= currentCollider2_leftBottom_world.x)
+				if (currentCollider1_topRight_world.x <= currentCollider2_leftBottom_world.x)
 				{
-					return false;
+					continue;
 				}
-				if (currentCollider1_leftBottom_world.y + 1.f >= currentCollider2_topRight_world.y)
+				if (currentCollider1_leftBottom_world.y >= currentCollider2_topRight_world.y)
 				{
-					return false;
+					continue;
 				}
-				if (currentCollider1_topRight_world.y - 1.f <= currentCollider2_leftBottom_world.y)
+				if (currentCollider1_topRight_world.y <= currentCollider2_leftBottom_world.y)
 				{
-					return false;
+					continue;
 				}
+				return true;
 			}
 		}
 
-		return true;
+		return false;
 	}
 }
